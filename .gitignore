@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+*.zip
+历史版本/
+上架版/
+LayerBar_*.txt

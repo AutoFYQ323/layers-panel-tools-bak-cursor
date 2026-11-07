@@ -1,0 +1,25 @@
+[general]
+name=Layers Panel Tools
+qgisMinimumVersion=3.28
+qgisMaximumVersion=4.99
+description=Buttons on the existing Layers panel toolbar: layer visibility schemes, batch select, layer manager, batch export, polygon select, feature counts, basemap presets, solo, flash locate, and more, with per-button and per-function keyboard shortcuts
+version=1.0.0
+author=youyu
+email=jd_sys_xx@163.com
+about=Layers Panel Tools adds buttons to the toolbar of the existing Layers panel. After installation there is no main-window toolbar icon: every button, and the Layers Panel Tools settings button at the end of the same toolbar, sits on the Layers panel itself. Buttons show an icon only; the name appears on hover and can be renamed.
+    On by default: labels (all or selected layers), batch select (zoom to fit, by type or state, never touching basemaps), layer manager (show/labels switches, opacity, style copy/paste, jump to symbology, fields, properties), edit log (roll back operations one by one or by layer, in memory), batch export (point/line/polygon layers to a folder, one file per layer), polygon select (select, copy, move, or delete features of many layers inside a drawn polygon), feature counts beside layer names, layer visibility schemes (remember which layers and categories are on, per project, with several schemes), basemap presets, solo (show only the selected layers, click again to restore), and flash locate (blink layer switches or flash features, adjustable interval).
+    Off by default, one click away in Layers Panel Tools settings: organize (sort, group, layer CSV, snapshots), repair data sources, find layer (name, field, or value search with wildcards), show/hide all layers (basemaps untouched), move layers, opacity slider, copy/paste style, batch rename, copy layer files with sidecars, split by field, layer color tags, scale check, and render check.
+    Shortcuts: every button — and every function inside a multi-function button — can get its own keyboard shortcut and a custom title. Shortcuts respond only while the QGIS main window has focus, never system-wide. Conflicts are checked while you type: a shortcut already used by another function or by QGIS itself is refused, and its holder is named.
+    The interface is Chinese, English, Spanish, French, or Arabic. The first launch follows the QGIS locale, then the system locale, and the choice is remembered. Arabic lays out plugin windows from right to left. Settings, button order, rows, custom titles, basemap presets, and visibility schemes are stored on this machine and apply to every project; visibility snapshots and layer color tags are stored in the project file. Bulk visibility actions never touch basemap layers.
+    Requirements: QGIS 3.28 through 4.99 (Qt 5 and Qt 6). No extra Python packages. Local files only; no binaries, no external services.
+icon=icon.png
+category=General
+tags=layers, panel, toolbar, visibility, organize, rename, opacity, style, labels, basemap, shortcut
+homepage=https://yuyouhui.online/tools/qgis/layers-panel-tools/
+tracker=https://github.com/AutoFYQ323/layers-panel-tools/issues
+repository=https://github.com/AutoFYQ323/layers-panel-tools
+changelog=1.0.0
+    First public release. Buttons on the Layers panel toolbar, with settings for visibility, order, rows, and custom titles. Eleven tools on by default, fourteen more one click away in settings. Multi-function buttons unfold in settings so each sub-function can get its own title and shortcut; shortcuts are checked for conflicts as you type and are never system-wide. Interface in Chinese, English, Spanish, French, or Arabic; the first launch follows the QGIS locale and the choice is remembered; Arabic lays out windows from right to left.
+experimental=False
+deprecated=False
+server=False
