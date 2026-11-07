@@ -94,7 +94,7 @@ class SplitDialog(QDialog):
         layout.addWidget(QLabel(tr("最多拆分多少个值（超出会提示）")))
         layout.addWidget(self.max_box)
         self.preview = QListWidget()
-        self.preview.setSelectionMode(QAbstractItemView.NoSelection)
+        self.preview.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         layout.addWidget(self.preview)
         self.box = QDialogButtonBox()
         cancel_flag = qt_attr(QDialogButtonBox, "Cancel")

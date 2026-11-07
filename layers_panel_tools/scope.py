@@ -142,7 +142,7 @@ def legend_rule_key(legend):
     try:
         from qgis.core import QgsLayerTreeModelLegendNode
 
-        role = QgsLayerTreeModelLegendNode.RuleKeyRole
+        role = QgsLayerTreeModelLegendNode.CustomRole.RuleKeyRole
     except Exception:
         return ""
     try:

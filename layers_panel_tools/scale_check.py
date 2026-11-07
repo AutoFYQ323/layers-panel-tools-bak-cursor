@@ -157,7 +157,7 @@ class ScaleCheckDialog(QDialog):
             try:
                 from qgis.PyQt.QtCore import Qt
 
-                item.setCheckState(Qt.Checked)
+                item.setCheckState(Qt.CheckState.Checked)
             except Exception:
                 pass  # nosec
             self.list.addItem(item)
@@ -174,7 +174,7 @@ class ScaleCheckDialog(QDialog):
             if not layer_id:
                 continue
             try:
-                if item.checkState() == Qt.Checked:
+                if item.checkState() == Qt.CheckState.Checked:
                     ids.append(layer_id)
             except Exception:
                 pass  # nosec

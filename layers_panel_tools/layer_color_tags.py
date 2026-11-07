@@ -63,7 +63,7 @@ def tag_icon(tag_id, size=16):
     from qgis.PyQt.QtGui import QPainter, QPen
 
     painter = QPainter(pixmap)
-    painter.setRenderHint(QPainter.Antialiasing)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
     painter.setBrush(tag_color(tag_id))
     painter.setPen(QPen(QColor(60, 60, 60), 1))
     painter.drawRoundedRect(1, 1, size - 2, size - 2, 3, 3)

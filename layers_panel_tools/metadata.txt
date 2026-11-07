@@ -3,7 +3,7 @@ name=Layers Panel Tools
 qgisMinimumVersion=3.28
 qgisMaximumVersion=4.99
 description=Buttons on the existing Layers panel toolbar: layer visibility schemes, batch select, layer manager, batch export, polygon select, feature counts, basemap presets, solo, flash locate, and more, with per-button and per-function keyboard shortcuts
-version=1.0.0
+version=1.0.1
 author=youyu
 email=jd_sys_xx@163.com
 about=Layers Panel Tools adds buttons to the toolbar of the existing Layers panel. After installation there is no main-window toolbar icon: every button, and the Layers Panel Tools settings button at the end of the same toolbar, sits on the Layers panel itself. Buttons show an icon only; the name appears on hover and can be renamed.
@@ -18,7 +18,7 @@ tags=layers, panel, toolbar, visibility, organize, rename, opacity, style, label
 homepage=https://yuyouhui.online/tools/qgis/layers-panel-tools/
 tracker=https://github.com/AutoFYQ323/layers-panel-tools/issues
 repository=https://github.com/AutoFYQ323/layers-panel-tools
-changelog=1.0.0
+changelog=1.0.1
     First public release. Buttons on the Layers panel toolbar, with settings for visibility, order, rows, and custom titles. Eleven tools on by default, fourteen more one click away in settings. Multi-function buttons unfold in settings so each sub-function can get its own title and shortcut; shortcuts are checked for conflicts as you type and are never system-wide. Interface in Chinese, English, Spanish, French, or Arabic; the first launch follows the QGIS locale and the choice is remembered; Arabic lays out windows from right to left.
 experimental=False
 deprecated=False

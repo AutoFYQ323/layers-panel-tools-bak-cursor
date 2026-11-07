@@ -178,7 +178,7 @@ def _reset_icon():
 def _help_icon():
     def draw(painter):
         painter.setBrush(QColor("#2f6fed"))
-        painter.setPen(QPen(Qt.transparent))
+        painter.setPen(QPen(Qt.GlobalColor.transparent))
         painter.drawEllipse(QRectF(7, 7, 18, 18))
         painter.setPen(QPen(QColor("#ffffff")))
         font = QFont()

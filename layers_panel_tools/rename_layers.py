@@ -210,7 +210,7 @@ class RenameDialog(QDialog):
             try:
                 from qgis.PyQt.QtCore import Qt
 
-                keep_checked[item.data(user_role())] = item.checkState() == Qt.Checked
+                keep_checked[item.data(user_role())] = item.checkState() == Qt.CheckState.Checked
             except Exception:
                 pass  # nosec
         if not keep_checked:
@@ -236,7 +236,7 @@ class RenameDialog(QDialog):
             try:
                 from qgis.PyQt.QtCore import Qt
 
-                item.setCheckState(Qt.Checked if keep_checked.get(layer.id()) else Qt.Unchecked)
+                item.setCheckState(Qt.CheckState.Checked if keep_checked.get(layer.id()) else Qt.CheckState.Unchecked)
             except Exception:
                 pass  # nosec
             self.list.addItem(item)
@@ -247,7 +247,7 @@ class RenameDialog(QDialog):
         for index in range(self.list.count()):
             item = self.list.item(index)
             if item.data(user_role()):
-                item.setCheckState(Qt.Checked if on else Qt.Unchecked)
+                item.setCheckState(Qt.CheckState.Checked if on else Qt.CheckState.Unchecked)
 
     def _apply(self):
         from qgis.PyQt.QtCore import Qt
@@ -262,7 +262,7 @@ class RenameDialog(QDialog):
             if not layer_id:
                 continue
             try:
-                checked = item.checkState() == Qt.Checked
+                checked = item.checkState() == Qt.CheckState.Checked
             except Exception:
                 checked = False
             layer = QgsProject.instance().mapLayer(layer_id)

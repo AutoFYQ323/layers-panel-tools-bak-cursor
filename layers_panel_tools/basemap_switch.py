@@ -151,7 +151,7 @@ def _is_basemap_candidate(layer):
     if layer is None:
         return False
     try:
-        if layer.type() == QgsMapLayer.RasterLayer:
+        if layer.type() == QgsMapLayer.LayerType.RasterLayer:
             return True
     except Exception:
         pass  # nosec

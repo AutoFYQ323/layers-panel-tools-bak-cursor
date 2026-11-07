@@ -389,7 +389,7 @@ class ToolbarHost:
                 QgsMessageLog.logMessage(
                     "unmatched toolbar button %s: %s" % (button_id, label),
                     _LOG,
-                    Qgis.Warning,
+                    Qgis.MessageLevel.Warning,
                 )
 
     def _default_ids(self):

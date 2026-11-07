@@ -115,7 +115,7 @@ class LayersPanelToolsPlugin:
         try:
             attached = self.host.attach()
         except Exception as exc:
-            QgsMessageLog.logMessage("attach failed: %s" % exc, _LOG, Qgis.Critical)
+            QgsMessageLog.logMessage("attach failed: %s" % exc, _LOG, Qgis.MessageLevel.Critical)
             attached = False
         subcommands.ensure_actions(self.iface)
         self._apply_shortcuts()
@@ -124,7 +124,7 @@ class LayersPanelToolsPlugin:
             QgsMessageLog.logMessage(
                 tr("图层面板上有按钮没对上已知图标，已按它自己的提示文字记住。打开设置可以核对。"),
                 _LOG,
-                Qgis.Warning,
+                Qgis.MessageLevel.Warning,
             )
 
     def unload(self):
@@ -169,7 +169,7 @@ class LayersPanelToolsPlugin:
             try:
                 host.detach()
             except Exception as exc:
-                QgsMessageLog.logMessage("detach failed: %s" % exc, _LOG, Qgis.Warning)
+                QgsMessageLog.logMessage("detach failed: %s" % exc, _LOG, Qgis.MessageLevel.Warning)
         if self.action is not None:
             try:
                 self.action.deleteLater()
@@ -190,9 +190,9 @@ class LayersPanelToolsPlugin:
             try:
                 self.host.attach()
             except Exception as exc:
-                QgsMessageLog.logMessage("attach failed: %s" % exc, _LOG, Qgis.Critical)
+                QgsMessageLog.logMessage("attach failed: %s" % exc, _LOG, Qgis.MessageLevel.Critical)
         if not self.host.attached:
-            QgsMessageLog.logMessage(tr("没有找到图层面板的工具条。"), _LOG, Qgis.Warning)
+            QgsMessageLog.logMessage(tr("没有找到图层面板的工具条。"), _LOG, Qgis.MessageLevel.Warning)
             return
         dialog = SettingsDialog(
             self.host.current_rows(),
@@ -368,11 +368,11 @@ class LayersPanelToolsPlugin:
         if not errors:
             return
         for line in errors:
-            QgsMessageLog.logMessage(line, _LOG, Qgis.Warning)
+            QgsMessageLog.logMessage(line, _LOG, Qgis.MessageLevel.Warning)
         QgsMessageLog.logMessage(
             tr("有语言只翻译了一部分，语言列表里不会出现它。详情在日志面板的 LayersPanelTools。"),
             _LOG,
-            Qgis.Warning,
+            Qgis.MessageLevel.Warning,
         )
 
     def _on_language(self, *_args):

@@ -8,7 +8,7 @@ import zipfile
 
 ROOT = pathlib.Path(__file__).resolve().parent
 PLUGIN = ROOT / "layers_panel_tools"
-OUT = ROOT / "layers_panel_tools_1.0.0.zip"
+OUT = ROOT / "layers_panel_tools_1.0.1.zip"
 SKIP_DIRS = {"__pycache__"}
 SKIP_FILES = {"self_test.py"}
 

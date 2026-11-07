@@ -79,7 +79,7 @@ class PerfDialog(QDialog):
         self.hint = QLabel()
         layout.addWidget(self.hint)
         self.list = QListWidget()
-        self.list.setSelectionMode(QAbstractItemView.NoSelection)
+        self.list.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         layout.addWidget(self.list)
         self.bar = QProgressBar()
         self.bar.setRange(0, 1)
@@ -167,9 +167,7 @@ class PerfDialog(QDialog):
             item = QListWidgetItem(text)
             item.setData(user_role(), layer_id)
             try:
-                from qgis.PyQt.QtCore import Qt
-
-                item.setCheckState(Qt.Unchecked)
+                item.setCheckState(Qt.CheckState.Unchecked)
             except Exception:
                 pass  # nosec
             self.list.addItem(item)
@@ -216,8 +214,6 @@ class PerfDialog(QDialog):
         return int(timer.elapsed())
 
     def _turn_off_checked(self):
-        from qgis.PyQt.QtCore import Qt
-
         root = QgsProject.instance().layerTreeRoot()
         for index in range(self.list.count()):
             item = self.list.item(index)
@@ -225,7 +221,7 @@ class PerfDialog(QDialog):
             if not layer_id:
                 continue
             try:
-                if item.checkState() != Qt.Checked:
+                if item.checkState() != Qt.CheckState.Checked:
                     continue
             except Exception:
                 continue  # nosec
