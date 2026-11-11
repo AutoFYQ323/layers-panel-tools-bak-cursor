@@ -514,6 +514,25 @@ class SaveSchemeDialog(QDialog):
         return name, project_id
 
 
+# 同一次 QGIS 进程里，插件重新启用不再把已记住的图层开关套回去。
+# 记在 qgis.utils 上：插件模块被整包重新载入后，这个标记还在。
+# 打开工程时的自动套用仍由 readProject 触发。
+def _session_ready():
+    try:
+        import qgis.utils as qutils
+    except Exception:
+        return False
+    return bool(getattr(qutils, "_lpt_switch_session_ready", False))
+
+
+def _mark_session():
+    try:
+        import qgis.utils as qutils
+    except Exception:
+        return
+    qutils._lpt_switch_session_ready = True
+
+
 class SwitchController:
     def __init__(self, iface):
         self.iface = iface
@@ -544,7 +563,9 @@ class SwitchController:
         )
         self._plugin.setMenu(self._make_menu(iface.mainWindow()))
         self._hook()
-        self._schedule()
+        if not _session_ready():
+            _mark_session()
+            self._schedule()
 
     def toolbar_action(self):
         return self._toolbar

@@ -2368,3 +2368,21 @@ AR = {
     '（第三方）': '(طرف ثالث)',
     '（自有）': '(مدمجة)',
 }
+
+
+def _load_extra():
+    """Merge sentences added after 1.0.3. Loaded by path so check_i18n can import this file alone."""
+    import importlib.util
+    from pathlib import Path
+
+    path = Path(__file__).with_name("catalog_extra.py")
+    spec = importlib.util.spec_from_file_location("lpt_catalog_extra", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    EN.update(module.EN)
+    ES.update(module.ES)
+    FR.update(module.FR)
+    AR.update(module.AR)
+
+
+_load_extra()

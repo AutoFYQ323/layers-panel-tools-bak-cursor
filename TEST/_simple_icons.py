@@ -2,7 +2,7 @@
 """工具条图标：64px 扁平色块绘成，再缩成 32×32 透明 PNG 写入 layers_panel_tools/icons/。
 
 新增按钮时在本脚本里加同名绘制函数，并在 main() 的列表里登记，然后运行：
-    python "H:\\QGIS\\Marketplace\\LayersPanelTools\\_simple_icons.py"
+    python "H:\\QGIS\\Marketplace\\LayersPanelTools\\TEST\\_simple_icons.py"
 不要用复杂文生图；同一张图不要给两个按钮用。
 """
 
@@ -10,7 +10,7 @@ import os
 
 from PIL import Image, ImageDraw
 
-OUT = os.path.join(os.path.dirname(__file__), "layers_panel_tools", "icons")
+OUT = os.path.join(os.path.dirname(__file__), "..", "layers_panel_tools", "icons")
 BG = (0, 0, 0, 0)
 BLUE = (47, 128, 237, 255)
 GREEN = (46, 160, 67, 255)
@@ -249,6 +249,31 @@ def perf():
     _finish(im, "perf")
 
 
+def layer_ops():
+    im, d = new()
+    d.rounded_rectangle((8, 14, 36, 28), radius=3, fill=BLUE)
+    d.rounded_rectangle((12, 26, 40, 40), radius=3, fill=GREEN)
+    d.rounded_rectangle((16, 38, 44, 52), radius=3, fill=ORANGE)
+    d.line([(46, 16), (58, 28)], fill=PURPLE, width=4)
+    _finish(im, "layer_ops")
+
+
+def line_ends():
+    im, d = new()
+    d.line([(10, 46), (54, 16)], fill=BLUE, width=5)
+    d.ellipse((4, 40, 18, 54), fill=GREEN)
+    d.ellipse((46, 8, 60, 22), fill=RED)
+    _finish(im, "line_ends")
+
+
+def class_export():
+    im, d = new()
+    d.rounded_rectangle((8, 12, 28, 36), radius=3, fill=BLUE)
+    d.rounded_rectangle((22, 22, 42, 46), radius=3, fill=GREEN)
+    d.rounded_rectangle((36, 32, 56, 56), radius=3, fill=ORANGE)
+    _finish(im, "class_export")
+
+
 def main():
     for fn in (
         organize,
@@ -277,6 +302,9 @@ def main():
         flash_blink,
         scale_check,
         perf,
+        layer_ops,
+        line_ends,
+        class_export,
     ):
         fn()
 

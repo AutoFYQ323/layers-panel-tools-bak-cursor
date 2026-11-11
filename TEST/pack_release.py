@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-"""Build the Layers Panel Tools plugin zip for plugins.qgis.org. Run from this folder (the parent of layers_panel_tools)."""
+"""Build the Layers Panel Tools plugin zip. This script lives in TEST; the plugin directory stays beside TEST."""
 
 import pathlib
 import subprocess
 import sys
 import zipfile
 
-ROOT = pathlib.Path(__file__).resolve().parent
+ROOT = pathlib.Path(__file__).resolve().parent.parent
 PLUGIN = ROOT / "layers_panel_tools"
-OUT = ROOT / "layers_panel_tools_1.0.3.zip"
+OUT = pathlib.Path(__file__).resolve().parent / "layers_panel_tools_1.0.5.zip"
 SKIP_DIRS = {"__pycache__"}
 SKIP_FILES = {"self_test.py"}
 

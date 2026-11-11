@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Layers panel toolbar buttons, with one settings button for show, hide, and order."""
 
+from qgis.PyQt.QtCore import QTimer
 from qgis.PyQt.QtGui import QIcon
 from qgis.core import Qgis, QgsApplication, QgsMessageLog
 
@@ -39,11 +40,14 @@ from .solo_layers import make_menu_action as solo_menu_action
 from .solo_layers import reset_solo
 from .source_repair import close_repair
 from .source_repair import make_menu_action as repair_menu_action
-from .split_by_field import close_split, make_menu_action as split_field_menu_action
 from .copy_layer_files import make_menu_action as copy_files_menu_action
 from .style_copy import make_menu_action as style_menu_action
 from .switchboard import close_switch
 from .switchboard import make_menu_action as switch_menu_action
+from .layer_ops import make_menu_action as layer_ops_menu_action
+from .line_ends import close_line_ends, make_menu_action as line_ends_menu_action
+from .class_export import close_class_export, make_menu_action as class_export_menu_action
+from .context_menu import ContextMenus
 from .toolbar_host import ToolbarHost, plain_title
 from .visibility_all import make_menu_action_hide as hide_all_menu_action, make_menu_action_show as show_all_menu_action
 
@@ -68,6 +72,8 @@ class LayersPanelToolsPlugin:
         self.dialog = None
         self._warned_fallback = False
         self._shortcut_actions = {}
+        self._ui_timer = None
+        self.context = None
 
     def initGui(self):
         self._audit()
@@ -101,17 +107,20 @@ class LayersPanelToolsPlugin:
             basemap_menu_action(self.iface),
             style_menu_action(self.iface),
             copy_files_menu_action(self.iface),
-            split_field_menu_action(self.iface),
             layer_tags_menu_action(self.iface),
             solo_menu_action(self.iface),
             rename_menu_action(self.iface),
             flash_menu_action(self.iface),
             scale_check_menu_action(self.iface),
             perf_menu_action(self.iface),
+            layer_ops_menu_action(self.iface),
+            line_ends_menu_action(self.iface),
+            class_export_menu_action(self.iface),
         ]
         self._mount_menu()
         language_changed().connect(self._on_language)
         self.host = ToolbarHost(self.iface, self.action)
+        self.context = ContextMenus(self.iface, self.host)
         try:
             attached = self.host.attach()
         except Exception as exc:
@@ -119,6 +128,11 @@ class LayersPanelToolsPlugin:
             attached = False
         subcommands.ensure_actions(self.iface)
         self._apply_shortcuts()
+        self._ui_timer = QTimer(self.iface.mainWindow())
+        self._ui_timer.setInterval(1000)
+        self._ui_timer.timeout.connect(self._watch_ui)
+        self._ui_timer.start()
+        self._watch_ui()
         if attached and self.host.fallbacks and not self._warned_fallback:
             self._warned_fallback = True
             QgsMessageLog.logMessage(
@@ -127,7 +141,36 @@ class LayersPanelToolsPlugin:
                 Qgis.MessageLevel.Warning,
             )
 
+    def _watch_ui(self):
+        """图层面板工具条有时启动时还不在。等到它出现再挂上，被换掉就重新挂，不改图层勾选。"""
+        host = self.host
+        if host is not None:
+            try:
+                host.ensure()
+            except Exception as exc:
+                QgsMessageLog.logMessage("ensure failed: %s" % exc, _LOG, Qgis.MessageLevel.Warning)
+        context = self.context
+        if context is not None:
+            try:
+                context.attach()
+            except Exception as exc:
+                QgsMessageLog.logMessage("context menu failed: %s" % exc, _LOG, Qgis.MessageLevel.Warning)
+
     def unload(self):
+        timer = self._ui_timer
+        self._ui_timer = None
+        if timer is not None:
+            try:
+                timer.stop()
+            except Exception:
+                pass  # nosec
+        context = self.context
+        self.context = None
+        if context is not None:
+            try:
+                context.detach()
+            except Exception:
+                pass  # nosec
         self._drop_shortcut_actions()
         try:
             language_changed().disconnect(self._on_language)
@@ -150,10 +193,11 @@ class LayersPanelToolsPlugin:
         close_export()
         close_poly_select()
         close_basemap()
-        close_split()
         close_rename()
         close_scale_check()
         close_perf()
+        close_class_export()
+        close_line_ends()
         try:
             stop_flash()
         except Exception:
@@ -198,6 +242,7 @@ class LayersPanelToolsPlugin:
             self.host.current_rows(),
             self.host.default_rows(),
             self.iface.mainWindow(),
+            self.iface,
         )
         self.dialog = dialog
         try:
@@ -205,6 +250,7 @@ class LayersPanelToolsPlugin:
             if accepted:
                 order, hidden, rows, titles, shortcuts = dialog.result_order()
                 self.host.apply_saved(order, hidden, rows, titles, shortcuts)
+                dialog.commit_menu()
                 self._apply_shortcuts(shortcuts, warn=True)
         finally:
             self.dialog = None

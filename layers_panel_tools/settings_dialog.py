@@ -16,9 +16,11 @@ from qgis.PyQt.QtWidgets import (
     QListWidgetItem,
     QMenu,
     QDialogButtonBox,
+    QTabWidget,
     QTextBrowser,
     QToolButton,
     QVBoxLayout,
+    QWidget,
 )
 
 from .button_help import help_msgid_for, title_tip
@@ -89,6 +91,13 @@ QToolButton::menu-indicator {
 """
 
 _LANGUAGE_MARK = {"zh": "CN", "en": "EN", "es": "ES", "fr": "FR", "ar": "AR"}
+
+
+class _RowCombo(QComboBox):
+    """行号只能点选。滚轮留给列表本身，避免划过下拉框时把行号改掉。"""
+
+    def wheelEvent(self, event):
+        event.ignore()
 
 
 class _ShortcutEdit(QKeySequenceEdit):
@@ -262,10 +271,10 @@ class HelpDialog(QDialog):
 
 
 class SettingsDialog(QDialog):
-    def __init__(self, rows, default_rows, parent=None):
+    def __init__(self, rows, default_rows, parent=None, iface=None):
         super().__init__(parent)
         self.setObjectName("LayersPanelToolsSettingsDialog")
-        self.resize(550, 550)
+        self.resize(640, 580)
         self._defaults = list(default_rows)
         self._languages = offered_languages()
         self._listening = False
@@ -279,6 +288,10 @@ class SettingsDialog(QDialog):
         self._moving = False
 
         layout = QVBoxLayout(self)
+        self.tabs = QTabWidget()
+        toolbar_page = QWidget()
+        page_layout = QVBoxLayout(toolbar_page)
+        page_layout.setContentsMargins(0, 8, 0, 0)
         self._head = QHBoxLayout()
         self._head.setContentsMargins(0, 0, 0, 0)
         self._head.setSpacing(0)
@@ -293,7 +306,7 @@ class SettingsDialog(QDialog):
         self._head.addWidget(self.lbl_row, 10)
         self._head.addWidget(self.lbl_title, 27)
         self._head.addWidget(self.lbl_shortcut, 13)
-        layout.addLayout(self._head)
+        page_layout.addLayout(self._head)
 
         self.list = QListWidget()
         self.list.setDragDropMode(qt_attr(QAbstractItemView, "InternalMove"))
@@ -303,7 +316,14 @@ class SettingsDialog(QDialog):
         self._placer = _ComboPlacer(self)
         self.list.viewport().installEventFilter(self._placer)
         self.list.model().rowsMoved.connect(self._after_rows_moved)
-        layout.addWidget(self.list, 1)
+        page_layout.addWidget(self.list, 1)
+        self.tabs.addTab(toolbar_page, "")
+        from .context_menu import MenuSettingsPage
+
+        self.menu_page = MenuSettingsPage(iface, self)
+        self.tabs.addTab(self.menu_page, "")
+        self.tabs.currentChanged.connect(self._on_tab)
+        layout.addWidget(self.tabs, 1)
 
         row = QHBoxLayout()
         row.setSpacing(0)
@@ -374,6 +394,9 @@ class SettingsDialog(QDialog):
     def showEvent(self, event):
         super().showEvent(event)
         self._place_combos()
+        if not getattr(self, "_menu_ready", False):
+            self._menu_ready = True
+            self.menu_page.refresh()
 
     def result_order(self):
         self._sync_rows()
@@ -406,6 +429,8 @@ class SettingsDialog(QDialog):
 
     def retranslate(self, *_args):
         self.setWindowTitle(tr("图层面板工具设置"))
+        self.tabs.setTabText(0, tr("工具条"))
+        self.tabs.setTabText(1, tr("系统属性"))
         self.lbl_buttons.setText(tr("按钮"))
         self.lbl_title.setText(tr("自定义标题"))
         self.lbl_shortcut.setText(tr("快捷键"))
@@ -448,6 +473,45 @@ class SettingsDialog(QDialog):
             self._refresh_text(self.list.item(index))
         apply_direction(self)
         self._place_combos()
+        self.menu_page.retranslate()
+
+    def commit_menu(self):
+        self.menu_page.commit()
+
+    def title_for(self, button_id):
+        button_id = str(button_id or "")
+        self._sync_rows()
+        for index in range(self.list.count()):
+            item = self.list.item(index)
+            if str(item.data(_ID) or "") == button_id and item.data(_KIND) != "sub":
+                return str(item.data(_TITLE) or "").strip()
+        return str(self._titles_all.get(button_id) or "").strip()
+
+    def set_button_title(self, button_id, text):
+        button_id = str(button_id or "")
+        text = str(text or "")
+        for index in range(self.list.count()):
+            item = self.list.item(index)
+            if str(item.data(_ID) or "") != button_id or item.data(_KIND) == "sub":
+                continue
+            item.setData(_TITLE, text)
+            edit = self._title_edits.get(button_id)
+            if edit is not None and edit.text() != text:
+                edit.blockSignals(True)
+                edit.setText(text)
+                edit.blockSignals(False)
+            self._refresh_text(item)
+            return
+
+    def _on_tab(self, index):
+        toolbar = index == 0
+        for button in (self.btn_up, self.btn_down, self.btn_sep, self.btn_reset):
+            button.setEnabled(toolbar)
+        if toolbar:
+            self._update_delete()
+        else:
+            self.btn_delete.setEnabled(False)
+            self.menu_page.sync_toolbar_titles()
 
     def _fill_languages(self):
         self.lang_menu.clear()
@@ -534,7 +598,7 @@ class SettingsDialog(QDialog):
         button_id = str(item.data(_ID))
         combo = self._combos.get(button_id)
         if combo is None:
-            combo = QComboBox(self.list.viewport())
+            combo = _RowCombo(self.list.viewport())
             combo.setObjectName("LayersPanelToolsRowCombo")
             for number in range(1, MAX_ROWS + 1):
                 combo.addItem(str(number), number)
@@ -569,6 +633,8 @@ class SettingsDialog(QDialog):
     def _on_title(self, item, text):
         item.setData(_TITLE, text)
         self._refresh_text(item)
+        if self.tabs.currentIndex() == 1 and item.data(_KIND) != "sub":
+            self.menu_page.sync_toolbar_titles()
 
     def _ensure_shortcut(self, item):
         """快捷键只在插件自己的按钮和子功能上提供（原生按钮的快捷键归 QGIS 管）。"""

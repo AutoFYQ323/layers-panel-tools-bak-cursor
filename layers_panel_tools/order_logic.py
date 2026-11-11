@@ -6,7 +6,7 @@ SEP_PREFIX = "lpt:sep:"
 MAX_ROWS = 10
 # 首次安装和「恢复默认」时不勾选。默认勾选的按钮不在这张表里：
 # 标注、批量选择图层、图层管理、编辑记录、批量导出、按多边形选择、底图切换、图层开关、
-# 独显图层、闪烁定位。
+# 独显图层、闪烁定位、图层操作、线标注、分类导出。
 DEFAULT_HIDDEN = (
     "lpt:organize",
     "lpt:repair",
@@ -18,7 +18,6 @@ DEFAULT_HIDDEN = (
     "lpt:style",
     "lpt:rename",
     "lpt:copy_files",
-    "lpt:split_field",
     "lpt:layer_tags",
     "lpt:scale_check",
     "lpt:perf",
@@ -37,6 +36,9 @@ DEFAULT_PLUGIN_ORDER = (
     "lpt:basemap",
     "lpt:solo",
     "lpt:flash",
+    "lpt:layer_ops",
+    "lpt:line_ends",
+    "lpt:class_export",
     "lpt:organize",
     "lpt:repair",
     "lpt:find",
@@ -47,7 +49,6 @@ DEFAULT_PLUGIN_ORDER = (
     "lpt:style",
     "lpt:rename",
     "lpt:copy_files",
-    "lpt:split_field",
     "lpt:layer_tags",
     "lpt:scale_check",
     "lpt:perf",

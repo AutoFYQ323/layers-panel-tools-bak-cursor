@@ -27,6 +27,7 @@ KEYS = {
     "switch_book": ("visibility schemes", True, "per-project layer and category switches"),
     "opacity_scope": ("opacity", False, "last scope choice, convenience only"),
     "flash_interval": ("flash locate", False, "last flicker interval, convenience only"),
+    "menu_context": ("layer context menu", True, "right-click order, hidden items, custom titles, added tools"),
 }
 
 # Convenience keys: losing them costs nothing; reset clears them too.

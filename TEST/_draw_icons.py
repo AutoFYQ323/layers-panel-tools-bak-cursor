@@ -5,7 +5,7 @@ import os
 
 from PIL import Image, ImageDraw
 
-OUT = os.path.join(os.path.dirname(__file__), "LayerBar", "icons")
+OUT = os.path.join(os.path.dirname(__file__), "icon_drafts")
 BLUE = (21, 101, 192, 255)
 SOFT = (21, 101, 192, 70)
 INK = (21, 101, 192, 255)
@@ -17,6 +17,7 @@ def new():
 
 
 def save(image, name):
+    os.makedirs(OUT, exist_ok=True)
     small = image.resize((32, 32), Image.Resampling.LANCZOS)
     small.save(os.path.join(OUT, name + ".png"))
 

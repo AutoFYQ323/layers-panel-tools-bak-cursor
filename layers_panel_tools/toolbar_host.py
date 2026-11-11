@@ -331,6 +331,79 @@ class ToolbarHost:
             raise
         return True
 
+    def ensure(self):
+        """挂上工具条。已经挂过但齿轮不在栏上，或工具条被换掉时，只重新摆放，不改图层勾选。"""
+        toolbar = find_toolbar(self.iface)
+        if toolbar is None:
+            return False
+        if not self.attached:
+            return self.attach()
+        try:
+            toolbar.actions()
+        except RuntimeError:
+            self.attached = False
+            self.toolbar = None
+            return self.attach()
+        same = False
+        try:
+            same = self.toolbar is toolbar
+            if self.toolbar is not None:
+                self.toolbar.actions()
+        except RuntimeError:
+            same = False
+            self.toolbar = None
+        if same and self._settings_on_bar():
+            return True
+        self.toolbar = toolbar
+        if not same:
+            self._refresh_native()
+        self._place()
+        return True
+
+    def _settings_on_bar(self):
+        action = self.settings_action
+        if action is None:
+            return True
+        bars = [self.toolbar] + list(self.extra_bars)
+        for bar in bars:
+            if bar is None:
+                continue
+            try:
+                if action in list(bar.actions()):
+                    return True
+            except RuntimeError:
+                return False
+        return False
+
+    def _refresh_native(self):
+        try:
+            actions = list(self.toolbar.actions())
+        except RuntimeError:
+            return
+        fresh = []
+        for action in actions:
+            try:
+                button_id = str(action.property("lpt_id") or "")
+                object_name = action.objectName() or ""
+            except RuntimeError:
+                continue
+            if button_id.startswith("lpt:") or object_name.startswith("LayersPanelTools"):
+                continue
+            fresh.append((action, True))
+        if not fresh:
+            return
+        for action, _visible in self.original:
+            try:
+                button_id = str(action.property("lpt_id") or "")
+            except RuntimeError:
+                continue
+            if button_id and not button_id.startswith("lpt:") and self.by_id.get(button_id) is action:
+                self.by_id.pop(button_id, None)
+        self.original = fresh
+        self._bind_native()
+        self.order = merge_order(self.order, self._living_ids(), self._default_ids())
+        self.hidden = clean_hidden(self.hidden, self.order)
+
     def detach(self):
         if not self.attached:
             return
@@ -376,7 +449,11 @@ class ToolbarHost:
         theme_icons = _theme_icons(size)
         used_roles = set()
         used_ids = set()
-        self.by_id = {}
+        kept = {}
+        for key, action in list(self.by_id.items()):
+            if str(key).startswith("lpt:"):
+                kept[key] = action
+        self.by_id = kept
         self.fallbacks = []
         for index, (action, _visible) in enumerate(self.original):
             button_id = identify_action(action, index, self.toolbar, size, theme_icons, used_roles, used_ids)

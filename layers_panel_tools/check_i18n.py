@@ -165,6 +165,12 @@ def main():
     self_check()
     scheme_check()
     try:
+        from export_logic import self_check as export_logic_check
+
+        export_logic_check()
+    except ImportError:
+        pass
+    try:
         from config_registry import self_check as config_check
 
         config_check()

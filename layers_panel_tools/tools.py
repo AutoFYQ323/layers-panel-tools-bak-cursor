@@ -20,11 +20,13 @@ from .scale_check import make_action as scale_check_action
 from .select_layers import make_action as select_action
 from .solo_layers import make_action as solo_action
 from .source_repair import make_action as repair_action
-from .split_by_field import make_action as split_field_action
 from .style_copy import make_action as style_action
 from .switchboard import make_action as switch_action
 from .visibility_all import make_action_hide as hide_all_action, make_action_show as show_all_action
 from .copy_layer_files import make_action as copy_files_action
+from .layer_ops import make_action as layer_ops_action
+from .line_ends import make_action as line_ends_action
+from .class_export import make_action as class_export_action
 
 
 def extra_actions(iface):
@@ -41,6 +43,9 @@ def extra_actions(iface):
         basemap_action(iface),
         solo_action(iface),
         flash_action(iface),
+        layer_ops_action(iface),
+        line_ends_action(iface),
+        class_export_action(iface),
         organize_action(iface),
         repair_action(iface),
         find_action(iface),
@@ -51,7 +56,6 @@ def extra_actions(iface):
         style_action(iface),
         rename_action(iface),
         copy_files_action(iface),
-        split_field_action(iface),
         layer_tags_action(iface),
         scale_check_action(iface),
         perf_action(iface),
